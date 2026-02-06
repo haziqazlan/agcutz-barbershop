@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-barber-cream text-barber-dark antialiased;
+  }
+
+  * {
+    @apply scroll-smooth;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-8 py-4 bg-barber-red text-white font-semibold rounded-none 
+           hover:bg-opacity-90 transition-all duration-300 
+           shadow-[4px_4px_0px_0px_rgba(26,26,26,1)]
+           hover:shadow-[6px_6px_0px_0px_rgba(26,26,26,1)]
+           hover:-translate-x-0.5 hover:-translate-y-0.5
+           active:shadow-[2px_2px_0px_0px_rgba(26,26,26,1)]
+           active:translate-x-0.5 active:translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border-2 border-barber-dark text-barber-dark font-semibold 
+           rounded-none hover:bg-barber-dark hover:text-barber-cream 
+           transition-all duration-300;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-barber-dark rounded-none
+           focus:outline-none focus:ring-0 focus:border-barber-red
+           bg-white transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-white border-2 border-barber-dark rounded-none
+           shadow-[8px_8px_0px_0px_rgba(26,26,26,1)]
+           transition-all duration-300;
+  }
+
+  .section-title {
+    @apply font-display text-4xl md:text-5xl lg:text-6xl font-bold 
+           text-barber-dark leading-tight;
+  }
+}
+
+@keyframes pole-spin {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 50px;
+  }
+}
+
+.barber-pole {
+  background: repeating-linear-gradient(
+    45deg,
+    #C41E3A,
+    #C41E3A 10px,
+    #003366 10px,
+    #003366 20px,
+    white 20px,
+    white 30px
+  );
+  background-size: 50px 50px;
+  animation: pole-spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.fade-in-delay-1 {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 0.2s forwards;
+}
+
+.fade-in-delay-2 {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 0.4s forwards;
+}
+
+.fade-in-delay-3 {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 0.6s forwards;
+}
