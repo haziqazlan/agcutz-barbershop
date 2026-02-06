@@ -2,8 +2,10 @@ import express from 'express';
 import Appointment from '../models/Appointment.js';
 import { protect } from '../middleware/auth.js';
 import { appointmentValidation, validate } from '../middleware/validation.js';
+import { sendBookingNotification } from '../utils/emailService.js';
 
 const router = express.Router();
+// const { sendBookingNotification } = require('../utils/emailService');
 
 // @route   POST /api/appointments
 // @desc    Create a new appointment (public)
@@ -45,6 +47,9 @@ router.post('/', appointmentValidation, validate, async (req, res) => {
       price: 15,
       status: 'upcoming',
     });
+
+    // Send email notification
+    await sendBookingNotification(appointment);
 
     res.status(201).json({
       message: 'Appointment booked successfully!',
