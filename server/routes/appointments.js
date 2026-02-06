@@ -48,8 +48,10 @@ router.post('/', appointmentValidation, validate, async (req, res) => {
       status: 'upcoming',
     });
 
-    // Send email notification
-    await sendBookingNotification(appointment);
+    // Send email notification (non-blocking - don't wait for it)
+    sendBookingNotification(appointment).catch(err => 
+      console.error('Email notification failed:', err.message)
+    );
 
     res.status(201).json({
       message: 'Appointment booked successfully!',
