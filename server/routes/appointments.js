@@ -2,7 +2,7 @@ import express from 'express';
 import Appointment from '../models/Appointment.js';
 import { protect } from '../middleware/auth.js';
 import { appointmentValidation, validate } from '../middleware/validation.js';
-import { sendBookingNotification } from '../utils/emailService.js';
+import { sendBookingNotification, sendCustomerConfirmation } from '../utils/emailService.js';
 
 const router = express.Router();
 // const { sendBookingNotification } = require('../utils/emailService');
@@ -51,6 +51,10 @@ router.post('/', appointmentValidation, validate, async (req, res) => {
     // Send email notification (non-blocking - don't wait for it)
     sendBookingNotification(appointment).catch(err => 
       console.error('Email notification failed:', err.message)
+    );
+
+    sendCustomerConfirmation(appointment).catch(err => 
+      console.error('Customer confirmation failed:', err.message)
     );
 
     res.status(201).json({
