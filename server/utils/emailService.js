@@ -12,7 +12,7 @@ export const sendBookingNotification = async (appointment) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'AG+ CUTZ Barbershop <onboarding@resend.dev>',
+      from: 'AG+ CUTZ Barbershop <bookings@agcutz.site>',
       to: [process.env.ADMIN_NOTIFICATION_EMAIL],
       subject: `🎉 New Booking - ${appointment.customerName} on ${new Date(appointment.date).toLocaleDateString()}`,
       html: `
@@ -103,7 +103,7 @@ export const sendCustomerConfirmation = async (appointment) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'AG+ CUTZ Barbershop <onboarding@resend.dev>',
+      from: 'AG+ CUTZ Barbershop <bookings@agcutz.site>',
       to: [appointment.customerEmail],
       subject: `✅ Appointment Confirmed - ${new Date(appointment.date).toLocaleDateString()}`,
       html: `
