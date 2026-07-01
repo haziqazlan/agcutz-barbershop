@@ -197,15 +197,19 @@ const AdminDashboard = () => {
                             ? 'bg-barber-blue/20 text-barber-blue'
                             : 'bg-barber-red/20 text-barber-red'
                         }`}>
-                          {appointment.appointmentType === 'outcall' ? 'Outcall' : 'In-Person'}
+                          {appointment.appointmentType === 'outcall' ? 'I Come to You' : 'At My Place'}
                         </span>
                       </p>
                     </div>
 
                     <div>
+                      <p className="font-semibold mb-1">Service</p>
+                      <p className="text-barber-dark/70">
+                        {appointment.serviceType === 'fade' ? 'Fade' : 'Scissor Cut'}
+                      </p>
                       {appointment.appointmentType === 'outcall' && appointment.address && (
                         <>
-                          <p className="font-semibold mb-1">Service Address</p>
+                          <p className="font-semibold mb-1 mt-3">Customer Address</p>
                           <p className="text-sm text-barber-dark/70">{appointment.address.street}</p>
                           <p className="text-sm text-barber-dark/70">
                             {appointment.address.city}, {appointment.address.zip}

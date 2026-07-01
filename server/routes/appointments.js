@@ -16,6 +16,7 @@ router.post('/', appointmentValidation, validate, async (req, res) => {
       customerName,
       customerEmail,
       customerPhone,
+      serviceType,
       appointmentType,
       address,
       date,
@@ -40,6 +41,7 @@ router.post('/', appointmentValidation, validate, async (req, res) => {
       customerName,
       customerEmail,
       customerPhone,
+      serviceType,
       appointmentType,
       address: appointmentType === 'outcall' ? address : undefined,
       date: new Date(date),
@@ -128,6 +130,17 @@ router.get('/available-slots', async (req, res) => {
     const nextDay = new Date(searchDate);
     nextDay.setDate(nextDay.getDate() + 1);
 
+    // AG+ Cutz only runs Saturdays and Sundays (solo, weekend side hustle)
+    const dayOfWeek = searchDate.getUTCDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      return res.json({
+        date: searchDate,
+        availableSlots: [],
+        bookedSlots: [],
+        message: 'Only available Saturdays and Sundays. Pick a weekend date.',
+      });
+    }
+
     // Find all booked appointments for the date
     const bookedAppointments = await Appointment.find({
       date: {
@@ -139,11 +152,8 @@ router.get('/available-slots', async (req, res) => {
 
     const bookedSlots = bookedAppointments.map(apt => apt.timeSlot);
 
-    // Available time slots: 12pm-9pm (noon to 9pm)
-    const allSlots = [
-      '12:00', '13:00', '14:00', '15:00', '16:00', 
-      '17:00', '18:00', '19:00', '20:00', '21:00'
-    ];
+    // Max 3 slots per day, solo barber - subject to availability
+    const allSlots = ['11:00', '13:00', '15:00'];
 
     const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
 

@@ -49,8 +49,12 @@ export const sendBookingNotification = async (appointment) => {
                 <td style="padding: 10px 0; color: #666;">${appointment.timeSlot}</td>
               </tr>
               <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 10px 0; font-weight: bold; color: #333;">Type:</td>
-                <td style="padding: 10px 0; color: #666;">${appointment.appointmentType === 'inPerson' ? '🏪 In-Person' : '🚗 Outcall Service'}</td>
+                <td style="padding: 10px 0; font-weight: bold; color: #333;">Service:</td>
+                <td style="padding: 10px 0; color: #666;">${appointment.serviceType === 'fade' ? 'Fade' : 'Scissor Cut'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px 0; font-weight: bold; color: #333;">Location:</td>
+                <td style="padding: 10px 0; color: #666;">${appointment.appointmentType === 'inPerson' ? '🏠 At My Place' : '🚗 I Come to You'}</td>
               </tr>
               ${appointment.appointmentType === 'outcall' ? `
               <tr style="border-bottom: 1px solid #eee;">
@@ -138,11 +142,11 @@ export const sendCustomerConfirmation = async (appointment) => {
                 </tr>
                 <tr style="border-bottom: 1px solid #ddd;">
                   <td style="padding: 12px 0; font-weight: bold; color: #333;">Service:</td>
-                  <td style="padding: 12px 0; color: #666;">Standard Haircut</td>
+                  <td style="padding: 12px 0; color: #666;">${appointment.serviceType === 'fade' ? 'Fade' : 'Scissor Cut'}</td>
                 </tr>
                 <tr style="border-bottom: 1px solid #ddd;">
-                  <td style="padding: 12px 0; font-weight: bold; color: #333;">Type:</td>
-                  <td style="padding: 12px 0; color: #666;">${appointment.appointmentType === 'inPerson' ? '🏪 In-Person' : '🚗 Outcall Service'}</td>
+                  <td style="padding: 12px 0; font-weight: bold; color: #333;">Location:</td>
+                  <td style="padding: 12px 0; color: #666;">${appointment.appointmentType === 'inPerson' ? '🏠 At My Place' : '🚗 I Come to You'}</td>
                 </tr>
                 ${appointment.appointmentType === 'outcall' ? `
                 <tr style="border-bottom: 1px solid #ddd;">
@@ -163,7 +167,7 @@ export const sendCustomerConfirmation = async (appointment) => {
             <div style="background-color: #fff3cd; border-left: 4px solid #D4AF37; padding: 15px; margin: 20px 0;">
               <p style="margin: 0; color: #856404; font-size: 14px;">
                 <strong>⏰ Please arrive 5 minutes early</strong><br>
-                ${appointment.appointmentType === 'outcall' ? 'Please ensure someone is available at the location.' : 'We look forward to seeing you at our shop!'}
+                ${appointment.appointmentType === 'outcall' ? 'Please make sure someone is home at the address provided.' : 'See you at my place!'}
               </p>
             </div>
 
