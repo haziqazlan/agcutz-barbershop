@@ -21,6 +21,14 @@ const appointmentSchema = new mongoose.Schema(
       trim: true,
       match: [/^[\d\s\-\+\(\)]+$/, 'Please provide a valid phone number'],
     },
+    serviceType: {
+      type: String,
+      required: [true, 'Service type is required'],
+      enum: {
+        values: ['scissorCut', 'fade'],
+        message: 'Service type must be either scissorCut or fade',
+      },
+    },
     appointmentType: {
       type: String,
       required: [true, 'Appointment type is required'],
@@ -46,6 +54,13 @@ const appointmentSchema = new mongoose.Schema(
     date: {
       type: Date,
       required: [true, 'Appointment date is required'],
+      validate: {
+        validator: (value) => {
+          const day = value.getUTCDay();
+          return day === 0 || day === 6;
+        },
+        message: 'Appointments are only available on Saturdays and Sundays',
+      },
     },
     timeSlot: {
       type: String,

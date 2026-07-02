@@ -31,13 +31,24 @@ export const appointmentValidation = [
     .notEmpty().withMessage('Phone number is required')
     .matches(/^[\d\s\-\+\(\)]+$/).withMessage('Please provide a valid phone number'),
   
+  body('serviceType')
+    .notEmpty().withMessage('Service type is required')
+    .isIn(['scissorCut', 'fade']).withMessage('Invalid service type'),
+
   body('appointmentType')
     .notEmpty().withMessage('Appointment type is required')
     .isIn(['inPerson', 'outcall']).withMessage('Invalid appointment type'),
-  
+
   body('date')
     .notEmpty().withMessage('Date is required')
-    .isISO8601().withMessage('Invalid date format'),
+    .isISO8601().withMessage('Invalid date format')
+    .custom((value) => {
+      const day = new Date(value).getUTCDay();
+      if (day !== 0 && day !== 6) {
+        throw new Error('Appointments are only available on Saturdays and Sundays');
+      }
+      return true;
+    }),
   
   body('timeSlot')
     .notEmpty().withMessage('Time slot is required')

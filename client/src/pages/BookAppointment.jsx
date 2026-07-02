@@ -13,6 +13,7 @@ const BookAppointment = () => {
     customerName: '',
     customerEmail: '',
     customerPhone: '',
+    serviceType: 'scissorCut',
     appointmentType: 'inPerson',
     date: '',
     timeSlot: '',
@@ -22,17 +23,35 @@ const BookAppointment = () => {
       zip: '',
     },
   });
+  const [dateError, setDateError] = useState('');
+  const [slotsMessage, setSlotsMessage] = useState('');
 
   useEffect(() => {
-    if (formData.date) {
+    if (formData.date && isWeekend(formData.date)) {
       fetchAvailableSlots(formData.date);
     }
   }, [formData.date]);
+
+  const formatSlotLabel = (slot) => {
+    const [hourStr, minute] = slot.split(':');
+    const hour = parseInt(hourStr, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+    return `${displayHour}:${minute} ${period}`;
+  };
+
+  const isWeekend = (dateString) => {
+    // Parse as local date to avoid UTC off-by-one on the day-of-week check
+    const [year, month, day] = dateString.split('-').map(Number);
+    const dayOfWeek = new Date(year, month - 1, day).getDay();
+    return dayOfWeek === 0 || dayOfWeek === 6;
+  };
 
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await appointmentsAPI.getAvailableSlots(date);
       setAvailableSlots(response.data.availableSlots);
+      setSlotsMessage(response.data.message || '');
     } catch (err) {
       console.error('Error fetching slots:', err);
     }
@@ -40,7 +59,17 @@ const BookAppointment = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
+    if (name === 'date') {
+      if (value && !isWeekend(value)) {
+        setDateError('I only cut on Saturdays and Sundays — pick a weekend date.');
+        setFormData(prev => ({ ...prev, date: value, timeSlot: '' }));
+        setAvailableSlots([]);
+        return;
+      }
+      setDateError('');
+    }
+
     if (name.startsWith('address.')) {
       const addressField = name.split('.')[1];
       setFormData(prev => ({
@@ -91,7 +120,7 @@ const BookAppointment = () => {
             Booking Confirmed!
           </h2>
           <p className="text-barber-dark/70 mb-6">
-            We've received your appointment request. You'll receive a confirmation email shortly.
+            Got your request! You'll receive a confirmation email shortly.
           </p>
           <button onClick={() => navigate('/')} className="btn-primary">
             Back to Home
@@ -162,9 +191,49 @@ const BookAppointment = () => {
               </div>
             </div>
 
+            {/* Service Type */}
+            <div>
+              <h3 className="font-display text-2xl font-bold mb-4">Service *</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <label className={`cursor-pointer border-2 p-6 transition-all ${
+                  formData.serviceType === 'scissorCut'
+                    ? 'border-barber-red bg-barber-red/5'
+                    : 'border-barber-dark hover:border-barber-red'
+                }`}>
+                  <input
+                    type="radio"
+                    name="serviceType"
+                    value="scissorCut"
+                    checked={formData.serviceType === 'scissorCut'}
+                    onChange={handleChange}
+                    className="mr-3"
+                  />
+                  <span className="font-semibold">Scissor Cut</span>
+                  <p className="text-sm text-barber-dark/70 mt-2">$15 flat</p>
+                </label>
+
+                <label className={`cursor-pointer border-2 p-6 transition-all ${
+                  formData.serviceType === 'fade'
+                    ? 'border-barber-red bg-barber-red/5'
+                    : 'border-barber-dark hover:border-barber-red'
+                }`}>
+                  <input
+                    type="radio"
+                    name="serviceType"
+                    value="fade"
+                    checked={formData.serviceType === 'fade'}
+                    onChange={handleChange}
+                    className="mr-3"
+                  />
+                  <span className="font-semibold">Fade</span>
+                  <p className="text-sm text-barber-dark/70 mt-2">$15 flat</p>
+                </label>
+              </div>
+            </div>
+
             {/* Appointment Type */}
             <div>
-              <h3 className="font-display text-2xl font-bold mb-4">Appointment Type *</h3>
+              <h3 className="font-display text-2xl font-bold mb-4">Where *</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <label className={`cursor-pointer border-2 p-6 transition-all ${
                   formData.appointmentType === 'inPerson'
@@ -179,8 +248,8 @@ const BookAppointment = () => {
                     onChange={handleChange}
                     className="mr-3"
                   />
-                  <span className="font-semibold">In-Person</span>
-                  <p className="text-sm text-barber-dark/70 mt-2">Visit our barbershop</p>
+                  <span className="font-semibold">At My Place</span>
+                  <p className="text-sm text-barber-dark/70 mt-2">Come to my apartment</p>
                 </label>
 
                 <label className={`cursor-pointer border-2 p-6 transition-all ${
@@ -196,8 +265,8 @@ const BookAppointment = () => {
                     onChange={handleChange}
                     className="mr-3"
                   />
-                  <span className="font-semibold">Outcall Service</span>
-                  <p className="text-sm text-barber-dark/70 mt-2">We come to you</p>
+                  <span className="font-semibold">I Come to You</span>
+                  <p className="text-sm text-barber-dark/70 mt-2">I'll travel to your place</p>
                 </label>
               </div>
             </div>
@@ -205,7 +274,7 @@ const BookAppointment = () => {
             {/* Address for Outcall */}
             {formData.appointmentType === 'outcall' && (
               <div className="bg-barber-blue/5 p-6 border-2 border-barber-blue">
-                <h3 className="font-display text-2xl font-bold mb-4">Service Address *</h3>
+                <h3 className="font-display text-2xl font-bold mb-4">Your Address *</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block font-semibold mb-2">Street Address</label>
@@ -251,7 +320,10 @@ const BookAppointment = () => {
             {/* Date and Time */}
             <div>
               <h3 className="font-display text-2xl font-bold mb-4">Select Date & Time *</h3>
-              
+              <p className="text-sm text-barber-dark/70 mb-4">
+                Weekends only — Saturday or Sunday, max 3 slots a day depending on my availability.
+              </p>
+
               <div className="space-y-4">
                 <div>
                   <label className="block font-semibold mb-2">Date</label>
@@ -264,11 +336,17 @@ const BookAppointment = () => {
                     className="input-field"
                     required
                   />
+                  {dateError && (
+                    <p className="text-barber-red text-sm font-semibold mt-2">{dateError}</p>
+                  )}
                 </div>
 
-                {formData.date && (
+                {formData.date && !dateError && (
                   <div>
                     <label className="block font-semibold mb-2">Available Time Slots</label>
+                    {slotsMessage && (
+                      <p className="text-barber-dark/70 text-sm mb-3">{slotsMessage}</p>
+                    )}
                     {availableSlots.length > 0 ? (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {availableSlots.map(slot => (
@@ -288,7 +366,7 @@ const BookAppointment = () => {
                               onChange={handleChange}
                               className="sr-only"
                             />
-                            <span className="font-semibold">{slot}</span>
+                            <span className="font-semibold">{formatSlotLabel(slot)}</span>
                           </label>
                         ))}
                       </div>
